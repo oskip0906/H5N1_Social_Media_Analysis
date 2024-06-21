@@ -1,44 +1,47 @@
 import requests
 import re
+import csv
 from datetime import datetime
 
-# submissions_link = 'https://api.pullpush.io/reddit/search/submission/?'
 comments_link = 'https://api.pullpush.io/reddit/search/comment/?'
 
 parameters = {
     'q': 'H5N1',
     'sort': 'asc',
+    'sort_type': 'created_utc',
     'size': 100,
-    'after': 1672531200 #2023-01-01
+    'after': 1672531200, #2023-01-01
+    'before': 1735689600 #2024-01-01
 }
 
 for key, value in parameters.items():
-    # submissions_link += f'{key}={value}&'
     comments_link += f'{key}={value}&'
 
-# print(submissions_link)
-# print(comments_link)
+link_1 = f'{comments_link}subreddit=H5N1_AvianFlu'
+link_2 = f'{comments_link}subreddit=epidemiology'
+link_3 = f'{comments_link}subreddit=medicine'
+link_4 = f'{comments_link}subreddit=science'
+link_5 = f'{comments_link}subreddit=news'
+link_6 = f'{comments_link}subreddit=worldnews'
+link_7 = f'{comments_link}subreddit=Health'
+link_8 = f'{comments_link}subreddit=OutOfTheLoop'
 
-# submission_response = requests.get(submissions_link)
-comment_response = requests.get(comments_link)
+links = [link_1, link_2, link_3, link_4, link_5, link_6, link_7, link_8]
 
-# submissions = submission_response.json()
-comments = comment_response.json()
+print(links)
 
-# print(comments['data'][0].keys())
-
-# print("\n\nSubmissions:\n\n")
-
-# for submission in submissions['data']:
-#     print(submission['title'])
-#     print('------------------------------------')
-
-with open('comments.txt', 'w') as file:
-    for comment in comments['data']:
-        try:
-            date = datetime.fromtimestamp(comment['created_utc']).strftime('%Y-%m-%d %H:%M:%S')
-            line = comment['body'] + '\n' + date + '\n'    
-            file.write(line)
-            file.write('------------------------------------\n')
-        except KeyError:
-            continue
+with open('comments.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['Comment', 'Date'])
+    for link in links:
+        comment_response = requests.get(link)
+        comments = comment_response.json()
+        count = 0
+        for comment in comments['data']:
+            try:
+                date = datetime.fromtimestamp(comment['created_utc']).strftime('%Y-%m-%d %H:%M:%S')
+                writer.writerow([comment['body'], date])
+                count += 1
+            except:
+                continue
+        print(count)
