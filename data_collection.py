@@ -30,7 +30,7 @@ links = [link_1, link_2, link_3, link_4, link_5, link_6, link_7, link_8]
 
 print(links)
 
-with open('comments.csv', 'w', newline='') as file:
+with open('csv_files/comments.csv', 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(['Comment', 'Date'])
     for link in links:

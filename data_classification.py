@@ -16,5 +16,5 @@ labels = ["informative", "frustrated", "afraid", "skeptical", "critical", "suppo
 
 comments_df['Type'] = comments_df['Comment'].apply(classify_comment)
 
-output_file = 'classified_data.csv'
+output_file = 'csv_files/classified_data.csv'
 comments_df.to_csv(output_file, index=False)
