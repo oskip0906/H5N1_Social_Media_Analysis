@@ -11,11 +11,12 @@ parameters = {
     'sort_type': 'created_utc',
     'size': 100,
     'after': 1672531200, #2023-01-01
-    'before': 1735689600 #2024-01-01
 }
 
 for key, value in parameters.items():
     comments_link += f'{key}={value}&'
+
+# 100 comments max per request
 
 link_1 = f'{comments_link}subreddit=H5N1_AvianFlu'
 link_2 = f'{comments_link}subreddit=epidemiology'
