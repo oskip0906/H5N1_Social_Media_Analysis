@@ -7,7 +7,7 @@ data = pd.read_csv('csv_files/classified_data.csv')
 data['Date'] = pd.to_datetime(data['Date']).dt.date
 data_grouped = data.groupby(['Date', 'Type']).size().unstack(fill_value=0)
 
-fig, axs = plt.subplots(len(data_grouped.columns), 1, figsize=(20, 10), sharex=True)
+fig, axs = plt.subplots(len(data_grouped.columns), 1, figsize=(30, 10), sharex=True)
 
 for i, column in enumerate(data_grouped.columns):
     axs[i].plot(data_grouped.index, data_grouped[column], label=column)

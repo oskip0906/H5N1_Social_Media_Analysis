@@ -10,7 +10,7 @@ parameters = {
     'sort': 'asc',
     'sort_type': 'created_utc',
     'size': 100,
-    'after': 1672531200, #2023-01-01
+    'after': int(datetime.strptime('2022-01-01', "%Y-%m-%d").timestamp())
 }
 
 for key, value in parameters.items():
@@ -41,7 +41,8 @@ with open('csv_files/comments.csv', 'w', newline='') as file:
         for comment in comments['data']:
             try:
                 date = datetime.fromtimestamp(comment['created_utc']).strftime('%Y-%m-%d %H:%M:%S')
-                writer.writerow([comment['body'], date])
+                encoded_body = comment['body'].encode('latin-1', errors='replace')
+                writer.writerow([encoded_body.decode('latin-1'), date])
                 count += 1
             except:
                 continue

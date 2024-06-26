@@ -6,8 +6,8 @@ def classify_comment(comment):
     result = classifier(comment, labels)
     return result['labels'][0]
 
-input_file = 'comments.csv'
-comments_df = pd.read_csv(input_file)
+input_file = 'csv_files/comments.csv'
+comments_df = pd.read_csv(input_file, encoding='latin-1')
 
 print(comments_df.head())
 
