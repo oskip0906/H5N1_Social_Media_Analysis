@@ -4,11 +4,13 @@ import matplotlib.dates as mdates
 
 data = pd.read_csv('csv_files/outbreaks_weekly.csv')
 
-data['Week'] = pd.to_datetime(data['Week'])
+data[['StartWeek', 'EndWeek']] = data['Week'].str.split('/', expand=True)
+data['StartWeek'] = pd.to_datetime(data['StartWeek'])
+data['Cases'] = data['Cases'] / 10**3
 
 plt.figure(figsize=(10, 6))
-plt.plot(data['Week'], data['Count'])
+plt.plot(data['StartWeek'], data['Cases'])
 plt.xlabel('Week')
-plt.ylabel('Count')
+plt.ylabel('Cases (Thousands)')
 # plt.show()
 plt.savefig('graphs/oubreaks_weekly_graph.png')

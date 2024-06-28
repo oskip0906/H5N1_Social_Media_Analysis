@@ -1,11 +1,16 @@
 import pandas as pd
 
-data = pd.read_csv('csv_files/outbreaks.csv')
+data = pd.read_csv('csv_files/outbreaks.csv', encoding='utf-16')
 
-data['Week'] = pd.to_datetime(data['Outbreak Date'])
-data.set_index('Week', inplace=True)
+data['Week'] = pd.to_datetime(data['Date'], format='mixed').dt.to_period('W')
 
-weekly_counts = data.resample('W').size()
-weekly_counts_df = weekly_counts.to_frame(name='Count')
+week_to_cases = data.groupby('Week')['BirdsAffected'].sum().to_dict()
 
-weekly_counts_df.to_csv('csv_files/outbreaks_weekly.csv')
+# print(week_to_cases)
+
+weekly_counts = pd.DataFrame.from_dict(week_to_cases, orient='index', columns=['Cases'])
+weekly_counts.reset_index(inplace=True)
+
+weekly_counts.columns = ['Week', 'Cases']
+
+weekly_counts.to_csv('csv_files/outbreaks_weekly.csv', index=False)
