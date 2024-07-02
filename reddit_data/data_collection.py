@@ -39,7 +39,7 @@ for parameter in parameters:
     param_query = parameter['q']
     comments_links.append(f'{link_structure}q={param_query}&{"&".join(f"{key}={value}" for key, value in param_structure.items())}')
 
-print(comments_links)
+# print(comments_links)
 
 subreddits = ['minnesota', 'southdakota', 'california', 'pennsylvania', 'iowa', 'colorado', 'wisconsin', 
               'michigan', 'ohio', 'texas', 'washington', 'utah', 'maryland', 'kansas']
