@@ -19,13 +19,16 @@ def classify_file(file_name):
 
     # print(comments_df)
 
-    comments_df['Type'] = comments_df['Comment'].apply(classify_comment)
+    comments_df['Sentiment'] = comments_df['Comment'].apply(classify_comment)
     comments_df.to_csv(output_file, index=False)
 
 folder = 'csv_files/comments_by_state'
 files = os.listdir(folder)
 
-print(files)
+# print(files)
 
 for file_name in files:
     classify_file(file_name)
+
+data = pd.concat([pd.read_csv(f'csv_files/classified_comments_by_state/{file}') for file in files])
+data.to_csv('csv_files/classified_comments.csv', index=False)

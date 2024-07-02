@@ -10,9 +10,10 @@ with open('outbreak_data/uncleaned_outbreaks.txt', 'r') as file:
         split_line = line.strip().split(' ')
         date = split_line[0]
         cases = cases = int(split_line[-1].replace(',', ''))
-        state = split_line[1]
-        if state.lower() in states:
-            lines.append({'Date': date, 'State': state.lower(), 'Cases': cases})
+        for s in states:
+            if s in line.lower():
+                lines.append({'Date': date, 'State': s.lower(), 'Cases': cases})
+                break
 
 data = pd.DataFrame(lines)
 

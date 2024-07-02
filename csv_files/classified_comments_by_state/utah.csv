@@ -1,4 +1,4 @@
-Comment,Date,Subreddit,Type
+Comment,Date,Subreddit,Sentiment
 "Eggs are pricey because bird flu took out a bunch of chickens and it takes time for new chicks to reach egg-laying size. As of last month, 384 flocks in 36 states have been struck in 2022 by the bird flu.",2022-08-23 12:53:58,utah,concerned
 "Lol. Of course there are higher costs for a number of reasons, everyone's talking about it and feeling the pinch. I just thought it was funny you brought up *eggs*. Which are a whole issue unto themselves. 
 
@@ -33,13 +33,17 @@ The American Rescue Plan Act of 2021, signed into law on March 11, 2021, authori
 It is totally not the trillions of dollars that were injected into the economy, it is just coincidence, nothing to see here.",2023-01-18 12:00:07,utah,skeptical
 "I took this photo while showing some European friends around Zion in 2010.
 
-I recently met a condor biologist studying the birds near Cedar Breaks and we discussed condor recovery, their role in the ecosystem, and mortality rates.
 
-Lead poisoning is the number one cause of Condor (and birds of prey overall) mortality.
+I recently met a condor biologist studying the birds near Cedar Breaks and we discussed condor recovery, their role in the ecosystem, and mortality rates.
 
-Condors are carrion feeders, they scavenge gut piles left behind by hunters, which leads to lead poisoning very quickly, one tainted gut pile can spell death for these birds. This year, Condors are being killed by rampant avian flu in Arizona and Southern Utah, adding more stress to their already tenuous population recovery.
 
-I am an avid hunter and have since switched to copper ammunition while hunting. If you hunt with a rifle in Utah please consider the switch, it's more expensive, but it's really wild how many birds we're unintentionally harming with lead.",2023-04-21 16:52:38,utah,concerned
+Lead poisoning is the number one cause of Condor (and birds of prey overall) mortality.
+
+
+Condors are carrion feeders, they scavenge gut piles left behind by hunters, which leads to lead poisoning very quickly, one tainted gut pile can spell death for these birds. This year, Condors are being killed by rampant avian flu in Arizona and Southern Utah, adding more stress to their already tenuous population recovery.
+
+
+I am an avid hunter and have since switched to copper ammunition while hunting. If you hunt with a rifle in Utah please consider the switch, it's more expensive, but it's really wild how many birds we're unintentionally harming with lead.",2023-04-21 16:52:38,utah,concerned
 Unfortunately I believe quite a few died from avian flu very sad hopefully the can rebound again,2023-04-21 18:59:15,utah,afraid
 "It's a tragedy, I can't believe this particular outbreak of avian flu wasn't making more headlines. I guess avian flu isn't sexy enough for the general public.",2023-04-21 20:24:32,utah,concerned
 "&gt; I guess avian flu isn't sexy enough for the general public.
