@@ -10,27 +10,24 @@ param_structure = {
     'after': int(datetime.strptime('2022-02-08', "%Y-%m-%d").timestamp())
 }
 
-bird_flu = {
-    'q': '"bird%20flu"',
-    'param_structure': param_structure
-}
-
-avian_flu = {
-    'q': '"avian%20flu"',
-    'param_structure': param_structure
-}
-
-avian_influenza = {
-    'q': '"avian%20influenza"',
-    'param_structure': param_structure
-}
-
-h5n1 = {
-    'q': 'h5n1',
-    'param_structure': param_structure
-}
-
-parameters = [bird_flu, avian_flu, avian_influenza, h5n1]
+parameters = [
+    {
+        'q': '"bird%20flu"',
+        'param_structure': param_structure
+    },
+    {
+        'q': '"avian%20flu"',
+        'param_structure': param_structure
+    },
+    {
+        'q': '"avian%20influenza"',
+        'param_structure': param_structure
+    },
+    {
+        'q': 'h5n1',
+        'param_structure': param_structure
+    },
+]
 
 comments_links = []
 
@@ -41,7 +38,7 @@ for parameter in parameters:
 
 # print(comments_links)
 
-subreddits = ['minnesota', 'southdakota', 'california', 'pennsylvania', 'iowa', 'colorado', 'wisconsin', 
+subreddits = ['minnesota', 'southdakota', 'california', 'pennsylvania', 'iowa', 'colorado', 'wisconsin',
               'michigan', 'ohio', 'texas', 'washington', 'utah', 'maryland', 'kansas']
 
 links = []
