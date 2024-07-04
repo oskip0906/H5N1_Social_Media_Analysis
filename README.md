@@ -1,5 +1,5 @@
 ## Objective
-To conduct a comprehensive analysis of social media posts related to H5N1 outbreaks using posts from Reddit communities from various states in the US.
+To conduct a comprehensive analysis of social media posts related to H5N1 outbreaks using posts and comments from Reddit communities for various states in the US.
 
 ## Sources
 
