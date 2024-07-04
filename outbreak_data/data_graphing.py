@@ -24,7 +24,6 @@ for file in files:
     # plt.show()
     plt.savefig(f'graphs/outbreaks_weekly_by_state/{state}.png')
 
-
 data = pd.read_csv('csv_files/outbreaks_weekly.csv')
 
 data[['StartWeek', 'EndWeek']] = data['Week'].str.split('/', expand=True)
