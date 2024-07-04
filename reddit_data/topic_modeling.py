@@ -28,19 +28,16 @@ for comment in comments:
     processed_comments.append(preprocess_comment(comment))
 
 # 3 to 5 words per subtopic
-vectorizer_model = CountVectorizer(ngram_range=(3, 5), stop_words='english', min_df=10, max_df=0.1)
+vectorizer_model = CountVectorizer(ngram_range=(3, 5), stop_words='english')
 
-# umap model for dimensionality reduction
-umap_model = umap.UMAP(n_neighbors=10, n_components=5, min_dist=0, metric='cosine')
-
-# hdbscan model for clustering
-hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=10, min_samples=2, cluster_selection_epsilon=0.5)
+# hdbscan model for clustering 
+hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=5, min_samples=10, cluster_selection_epsilon=0.5)
 
 # bertopic model with adjusted parameters
-topic_model = BERTopic(vectorizer_model=vectorizer_model, umap_model=umap_model, hdbscan_model=hdbscan_model, verbose=True)
+topic_model = BERTopic(vectorizer_model=vectorizer_model, hdbscan_model=hdbscan_model, verbose=True)
 
 # fit-transform the model
-topics, probabilities = topic_model.fit_transform(processed_comments)
+topic_model.fit_transform(processed_comments)
 
 topics_list = {}
 
