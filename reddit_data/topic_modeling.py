@@ -1,13 +1,14 @@
 from bertopic import BERTopic
 from sklearn.feature_extraction.text import CountVectorizer
-import pandas as pd
-import nltk
 from nltk.corpus import stopwords
+import nltk
+import hdbscan
+import umap
+import pandas as pd
 import re
 import json
 
 nltk.download('punkt')
-nltk.download('stopwords')
 
 data = pd.read_csv('csv_files/classified_comments.csv')
 comments = data['Comment'].tolist()
@@ -27,10 +28,19 @@ for comment in comments:
     processed_comments.append(preprocess_comment(comment))
 
 # 3 to 5 words per subtopic
-vectorizer_model = CountVectorizer(ngram_range=(3, 5), stop_words='english')
+vectorizer_model = CountVectorizer(ngram_range=(3, 5), stop_words='english', min_df=10, max_df=0.1)
 
-topic_model = BERTopic(vectorizer_model=vectorizer_model, verbose=True)
-topic_model.fit_transform(processed_comments)
+# umap model for dimensionality reduction
+umap_model = umap.UMAP(n_neighbors=10, n_components=5, min_dist=0, metric='cosine')
+
+# hdbscan model for clustering
+hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=10, min_samples=2, cluster_selection_epsilon=0.5)
+
+# bertopic model with adjusted parameters
+topic_model = BERTopic(vectorizer_model=vectorizer_model, umap_model=umap_model, hdbscan_model=hdbscan_model, verbose=True)
+
+# fit-transform the model
+topics, probabilities = topic_model.fit_transform(processed_comments)
 
 topics_list = {}
 
