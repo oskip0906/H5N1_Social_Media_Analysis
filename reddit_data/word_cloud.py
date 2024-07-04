@@ -1,24 +1,24 @@
 import json
 from wordcloud import WordCloud
-
 import matplotlib.pyplot as plt
+import pandas as pd
+import re
 
-with open('json_files/topics.json', 'r') as file:
+data = pd.read_csv('csv_files/classified_comments.csv')
+comments = data['Comment'].tolist()
 
-    data = json.load(file)
+processed_comments = []
 
-    words_list = []
+for comment in comments:
+    comment = re.sub(r'[^\w\s]', '', comment)
+    processed_comments.append(comment)
 
-    for value in data.values():
-        words_list.append(str(value))
+text = ' '.join(processed_comments)
 
-    words_list = set(words_list)
+wordcloud = WordCloud().generate(text)
 
-    text = ' '.join(words_list)
-
-    wordcloud = WordCloud().generate(text)
-
-    plt.imshow(wordcloud)
-    plt.axis('off')
-    # plt.show()
-    plt.savefig('graphs/word_cloud_graph.png')
+plt.figure(figsize=(12, 8));
+plt.imshow(wordcloud)
+plt.axis('off')
+# plt.show()
+plt.savefig('graphs/word_cloud_graph.png')
