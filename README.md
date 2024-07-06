@@ -9,5 +9,6 @@ To conduct a comprehensive analysis of social media posts related to H5N1 outbre
 - Labels Classification: [BART-large-mnli](https://huggingface.co/facebook/bart-large-mnli)
 - Topic Modeling: [BERTopic](https://maartengr.github.io/BERTopic/index.html)
 
-## Notes
+## Requirements
 - Python Version: 3.11.9
+- ```pip install -r requirements.txt```
