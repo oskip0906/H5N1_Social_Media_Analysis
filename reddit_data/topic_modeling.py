@@ -1,20 +1,31 @@
 from bertopic import BERTopic
-from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+import matplotlib.pyplot as plt
+import hdbscan 
 import nltk
-import hdbscan
-import umap
+import string
 import pandas as pd
-import re
 import json
 
 nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('stopwords')  
 
 data = pd.read_csv('csv_files/classified_comments.csv')
 comments = data['Comment'].tolist()
 
 def preprocess_comment(comment):
-    comment = re.sub(r'[^\w\s]', '', comment).lower()
+
+    # consider context of words
+    lemmatizer = WordNetLemmatizer()
+    comment = lemmatizer.lemmatize(comment)
+
+    # remove punctuation and lowercase all words
+    translator = str.maketrans('', '', string.punctuation)
+    comment = comment.translate(translator).lower()
+
+    # tokenize and remove stopwords
     tokens = nltk.word_tokenize(comment)
     filtered_tokens = []
     for word in tokens:
@@ -27,17 +38,26 @@ processed_comments = []
 for comment in comments:
     processed_comments.append(preprocess_comment(comment))
 
-# 3 to 5 words per subtopic
-vectorizer_model = CountVectorizer(ngram_range=(3, 5), stop_words='english')
-
 # hdbscan model for clustering 
-hdbscan_model = hdbscan.HDBSCAN(min_cluster_size=5, min_samples=10, cluster_selection_epsilon=0.5)
+hdbscan_model = hdbscan.HDBSCAN(
+    min_cluster_size=10, 
+    min_samples=10, 
+    cluster_selection_epsilon=0.1
+)
 
 # bertopic model with adjusted parameters
-topic_model = BERTopic(vectorizer_model=vectorizer_model, hdbscan_model=hdbscan_model, verbose=True)
+topic_model = BERTopic(
+    hdbscan_model=hdbscan_model, 
+    embedding_model='all-MiniLM-L6-v2', 
+    nr_topics=10,
+    n_gram_range=(2, 5),
+)
 
 # fit-transform the model
 topic_model.fit_transform(processed_comments)
+
+fig = topic_model.visualize_topics()
+plt.savefig('graphs/intertopic_distances.png')
 
 topics_list = {}
 
@@ -47,10 +67,14 @@ while topic_model.get_topic(i) != False:
     subtopics_list = []
     for subtopic in subtopics:
         subtopics_list.append(subtopic[0])
-    topics_list[f"Topics Group {i + 1}"] = subtopics_list
+    topics_list[f"Topic {i + 1}"] = subtopics_list
     i += 1
 
 # print(topics_list)
 
 with open('json_files/topics.json', 'w') as f:
     json.dump(topics_list, f, indent=4)
+
+topic_model.save('models/topic_model_1')
+df = pd.DataFrame({'processed_comments': processed_comments})
+df.to_csv('csv_files/processed_comments.csv', index=False)
