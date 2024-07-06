@@ -1,6 +1,6 @@
 from bertopic import BERTopic
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer
 
 topic_model = BERTopic.load("models/topic_model_1")
 
@@ -13,12 +13,12 @@ for topic_id in range(len(topics)):
     if words:
         topic_representations.append(' '.join([word[0] for word in words]))
 
-# vectorize the topic representations
-vectorizer = TfidfVectorizer()
-tfidf_matrix = vectorizer.fit_transform(topic_representations)
+# use SentenceTransformer for vectorization to capture semantic similarity
+model = SentenceTransformer('all-MiniLM-L6-v2')
+embeddings = model.encode(topic_representations)
 
 # calculate pairwise cosine similarity
-similarity_matrix = cosine_similarity(tfidf_matrix)
+similarity_matrix = cosine_similarity(embeddings)
 
 # calculate the average pairwise cosine similarity; ignoring self-similarity
 n = similarity_matrix.shape[0]
