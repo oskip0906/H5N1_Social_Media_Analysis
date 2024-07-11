@@ -1,7 +1,7 @@
-import csv
 import pandas as pd
 
-states = ['minnesota', 'california', 'colorado', 'iowa', 'maryland', 'michigan', 'ohio', 'pennsylvania', 'texas', 'utah', 'wisconsin']
+states = ['minnesota', 'california', 'pennsylvania', 'iowa', 'colorado', 'wisconsin', 'michigan', 'ohio', 'texas', 'washington', 'utah']
+
 lines = []
 
 with open('outbreak_data/uncleaned_outbreaks.txt', 'r') as file:

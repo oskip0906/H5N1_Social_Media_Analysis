@@ -1,4 +1,3 @@
-import json
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -17,7 +16,7 @@ for comment in comments:
 
 text = ' '.join(processed_comments)
 
-print(text)
+# print(text)
 
 wordcloud = WordCloud().generate(text)
 

@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import matplotlib.dates as mdates
 import os
 
 folder = 'csv_files/outbreaks_by_state'

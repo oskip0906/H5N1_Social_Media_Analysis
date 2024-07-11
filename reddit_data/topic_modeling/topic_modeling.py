@@ -70,17 +70,14 @@ def topic_modeling(comments, output):
         topics_list[f"Topic {i + 1}"] = subtopics_list
         i += 1
 
+    if len(topics_list) == 0:
+        return
+
     # save the topics to a JSON file
     with open(f'json_files/{output}.json', 'w') as f:
         json.dump(topics_list, f, indent=4)
 
-    if output == 'all_topics':
-        topic_model.save(f'reddit_data/topic_modeling/topic_model')
-
-# all data
-data = pd.read_csv('csv_files/classified_comments.csv')
-comments = data['Comment'].tolist()
-topic_modeling(comments, 'all_topics')
+    topic_model.save(f'reddit_data/topic_modeling/topic_models/{output}_topic_model')
 
 # data by state
 folder = 'csv_files/classified_comments_by_state'
