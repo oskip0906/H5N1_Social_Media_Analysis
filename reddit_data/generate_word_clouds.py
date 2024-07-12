@@ -17,7 +17,7 @@ for file in files:
         
         text = ' '.join(words)
 
-        wordcloud = WordCloud().generate(text)
+        wordcloud = WordCloud(background_color="white", height=400, width=800).generate(text)
         
         plt.figure(figsize=(12, 8))
         plt.imshow(wordcloud, interpolation='bilinear') 
