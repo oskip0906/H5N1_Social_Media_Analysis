@@ -15,7 +15,7 @@ To conduct a comprehensive analysis of social media posts related to H5N1 outbre
 
 ## Requirements
 
-- **Python Version:** ```3.11.9```
+- **Python Version:** `3.11.9`
 - Install dependencies:
   
   ```bash
