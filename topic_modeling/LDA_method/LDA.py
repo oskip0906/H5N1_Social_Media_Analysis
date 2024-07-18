@@ -1,7 +1,7 @@
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import pickle
 import string
@@ -39,7 +39,7 @@ def topic_modeling(comments, output):
     for comment in comments:
         processed_comments.append(preprocess_comment(comment))
 
-    vect = TfidfVectorizer(
+    vect = CountVectorizer(
         stop_words=stopwords.words('english'), 
         max_features=1000,
         ngram_range=(2, 5)

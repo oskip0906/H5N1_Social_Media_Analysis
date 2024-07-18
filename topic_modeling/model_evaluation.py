@@ -28,16 +28,21 @@ def calculate_coherence_score(model):
     
     return avg_similarity
 
-# load the topic models
-folder = 'reddit_data/topic_modeling/topic_models'
-files = os.listdir(folder)
+def write_coherence_scores(method):
 
-coherence_scores = []
+    # load the topic models
+    folder = f'topic_modeling/{method}/models_by_state'
+    files = os.listdir(folder)
 
-for file in files:
-    state = file.split('/')[-1].split('_')[0]
-    model = BERTopic.load(f'{folder}/{file}')
-    coherence_scores.append(f'{state}: {calculate_coherence_score(model)}')
+    coherence_scores = []
 
-with open('reddit_data/topic_modeling/coherence_scores.txt', 'w') as file:
-    file.write('\n'.join(coherence_scores))
+    for file in files:
+        state = file.split('/')[-1].split('_')[0]
+        model = BERTopic.load(f'{folder}/{file}')
+        coherence_scores.append(f'{state}: {calculate_coherence_score(model)}')
+
+    with open(f'topic_modeling/{method}/coherence_scores.txt', 'w') as file:
+        file.write('\n'.join(coherence_scores))
+
+write_coherence_scores('BERTopic_method')
+// write_coherence_scores('LDA_method')
