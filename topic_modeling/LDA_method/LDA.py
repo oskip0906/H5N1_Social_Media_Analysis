@@ -1,49 +1,40 @@
-import nltk
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
+from gensim.corpora import Dictionary
+from gensim.models import CoherenceModel
 import pickle
-import string
 import pandas as pd
 import json
 import os
 
-nltk.download('punkt')
-nltk.download('wordnet')
-nltk.download('stopwords')
+import sys
+sys.path.append('topic_modeling')
+from process_comments import preprocess_comment
 
-def preprocess_comment(comment):
+def calculate_coherence_score(topic_words):
 
-    # consider context of words
-    lemmatizer = WordNetLemmatizer()
-    comment = lemmatizer.lemmatize(comment)
+    # Create a dictionary
+    dictionary = Dictionary(topic_words)
+    
+    # Initialize coherence model
+    coherence_model = CoherenceModel(
+        topics=topic_words,
+        texts=topic_words, 
+        dictionary=dictionary,
+        coherence='c_v'
+    )
 
-    # remove punctuation and lowercase all words
-    translator = str.maketrans('', '', string.punctuation)
-    comment = comment.translate(translator).lower()
+    coherence_score = coherence_model.get_coherence()
 
-    # tokenize and remove stopwords
-    tokens = nltk.word_tokenize(comment)
+    return coherence_score
 
-    filtered_tokens = []
-    for word in tokens:
-        if word not in stopwords.words('english'):
-            filtered_tokens.append(word)
-
-    return ' '.join(filtered_tokens)
-
-def topic_modeling(comments, output):
+def topic_modeling(coherence_scores, comments, output):
 
     processed_comments = []
     for comment in comments:
         processed_comments.append(preprocess_comment(comment))
 
-    vect = CountVectorizer(
-        stop_words=stopwords.words('english'), 
-        max_features=1000,
-        ngram_range=(2, 5)
-    )
+    vect = CountVectorizer(max_features=1000, ngram_range=(2, 5))
     vect_text = vect.fit_transform(processed_comments)
 
     # Initialize LDA model
@@ -54,14 +45,17 @@ def topic_modeling(comments, output):
     )
     
     lda_model.fit_transform(vect_text)
-
     vocab = vect.get_feature_names_out()
 
+    topic_words = []
     topics_list = {}
 
+    # Get the top 10 words for each topic
     for i, comp in enumerate(lda_model.components_):
-        topic_words = [vocab[id] for id in comp.argsort()[-10:]]
-        topics_list[f"Topic {i + 1}"] = topic_words
+        # Top 10 words for each topic
+        top_words = [vocab[id] for id in comp.argsort()[-10:]]
+        topic_words.append(top_words)
+        topics_list[f"Topic {i + 1}"] = top_words
 
     # save the topics to a JSON file
     with open(f'topic_modeling/LDA_method/topics_by_state/{output}.json', 'w') as f:
@@ -71,12 +65,24 @@ def topic_modeling(comments, output):
     with open(f'topic_modeling/LDA_method/models_by_state/{output}_topic_model', 'wb') as model_file:
         pickle.dump(lda_model, model_file)
 
-# data by state
-folder = 'csv_files/classified_comments_by_state'
-files = os.listdir(folder)
+    # Calculate and add the coherence score
+    coherence_score = calculate_coherence_score(topic_words)
+    coherence_scores.append(f'{output}: {coherence_score}')
 
-for file in files:
-    state = file[:-4].split('/')[-1]
-    state_data = pd.read_csv(f'{folder}/{file}')
-    state_comment = state_data['Comment'].tolist()
-    topic_modeling(state_comment, state)
+if __name__ == '__main__':
+
+    # data by state
+    folder = 'csv_files/classified_comments_by_state'
+    files = os.listdir(folder)
+
+    coherence_scores = []
+
+    for file in files:
+        state = file[:-4].split('/')[-1]
+        state_data = pd.read_csv(f'{folder}/{file}')
+        state_comment = state_data['Comment'].tolist()
+        topic_modeling(coherence_scores, state_comment, state)
+
+    # Save the coherence scores to a file
+    with open(f'topic_modeling/LDA_method/coherence_scores.txt', 'w') as file:
+        file.write('\n'.join(coherence_scores))
