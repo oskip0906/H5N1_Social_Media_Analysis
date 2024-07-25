@@ -1,11 +1,11 @@
-california: 0.9842824571280016
-colorado: 0.898874157795052
-iowa: 0.8988741577950519
-michigan: 0.9030845164418324
-minnesota: 0.899406932323882
-ohio: 0.963084816021555
-pennsylvania: 0.8913669509440444
-texas: 0.9849981807356191
-utah: 0.8186292482895157
-washington: 0.8071525865855377
-wisconsin: 0.8186292482895574
+california: 0.9996607418225902 with params {'max_features': 1500, 'min_cluster_size': 4, 'min_samples': 4, 'ngram_range': (3, 5)}
+colorado: 0.9997270108682224 with params {'max_features': 1500, 'min_cluster_size': 4, 'min_samples': 4, 'ngram_range': (3, 5)}
+iowa: 1.0000000000000002 with params {'max_features': 1000, 'min_cluster_size': 4, 'min_samples': 2, 'ngram_range': (3, 5)}
+michigan: 1.0000000000000002 with params {'max_features': 500, 'min_cluster_size': 4, 'min_samples': 4, 'ngram_range': (3, 5)}
+minnesota: 1.0000000000000002 with params {'max_features': 500, 'min_cluster_size': 4, 'min_samples': 4, 'ngram_range': (3, 5)}
+ohio: 1.0000000000000002 with params {'max_features': 500, 'min_cluster_size': 4, 'min_samples': 2, 'ngram_range': (2, 4)}
+pennsylvania: 1.0000000000000002 with params {'max_features': 500, 'min_cluster_size': 2, 'min_samples': 4, 'ngram_range': (3, 5)}
+texas: 0.9993762473083273 with params {'max_features': 1500, 'min_cluster_size': 2, 'min_samples': 4, 'ngram_range': (3, 5)}
+utah: 1.0000000000000002 with params {'max_features': 500, 'min_cluster_size': 2, 'min_samples': 4, 'ngram_range': (3, 5)}
+washington: 1.0 with params {'max_features': 500, 'min_cluster_size': 2, 'min_samples': 4, 'ngram_range': (3, 5)}
+wisconsin: 1.0000000000000002 with params {'max_features': 500, 'min_cluster_size': 4, 'min_samples': 4, 'ngram_range': (3, 5)}

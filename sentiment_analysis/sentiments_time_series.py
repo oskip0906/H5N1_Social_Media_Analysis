@@ -1,22 +1,41 @@
-import matplotlib.pyplot as plt
 import pandas as pd
-import matplotlib.dates as mdates
+import os
+import matplotlib.pyplot as plt
+
+def plot_time_series(data, state):
+
+    data['Date'] = pd.to_datetime(data['Date']).dt.date
+    data_grouped = data.groupby(['Date', 'Sentiment']).size().unstack(fill_value=0)
+    data_grouped.index = pd.to_datetime(data_grouped.index)
+
+    monthly_data = data_grouped.resample('ME').sum()
+
+    # Ensure all months are included in the x-axis
+    all_months = pd.date_range(start=monthly_data.index.min(), end=monthly_data.index.max(), freq='MS')
+
+    plt.figure(figsize=(20, 10))
+    plt.xticks(all_months, rotation=45)
+    plt.gca().set_xticks(all_months)
+    plt.gca().set_xticklabels([date.strftime('%Y-%m') for date in all_months])
+
+    for sentiment in monthly_data.columns:
+        plt.plot(monthly_data.index, monthly_data[sentiment], label=sentiment)
+
+    plt.xlabel('Date (Year-Month)')
+    plt.ylabel('Number of Posts')
+    plt.legend()
+    if state: 
+        plt.savefig(f'graphs/sentiments_time_series_by_state/{state}.png')
+    else:
+        plt.savefig('graphs/sentiments_time_series.png')
+
+folder = 'csv_files/classified_comments_by_state'
+files = os.listdir(folder)
+
+for file in files:
+    data = pd.read_csv(f'{folder}/{file}')
+    state = file[:-4].split('/')[-1]
+    plot_time_series(data, state)
 
 data = pd.read_csv('csv_files/classified_comments.csv')
-
-data['Date'] = pd.to_datetime(data['Date']).dt.date
-data_grouped = data.groupby(['Date', 'Sentiment']).size().unstack(fill_value=0)
-
-fig, axs = plt.subplots(len(data_grouped.columns), 1, figsize=(30, 10), sharex=True)
-
-for i, column in enumerate(data_grouped.columns):
-    axs[i].plot(data_grouped.index, data_grouped[column], label=column)
-    axs[i].legend(title='Sentiment', loc='upper left')
-
-axs[-1].xaxis.set_major_locator(mdates.MonthLocator())
-axs[-1].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))  
-
-plt.xlabel('Date (Year-Month)')
-fig.text(0.11, 0.5, 'Number of Posts', va='center', rotation='vertical')
-# plt.show()
-plt.savefig('graphs/time_series_for_sentiments_graph.png')
+plot_time_series(data, None)

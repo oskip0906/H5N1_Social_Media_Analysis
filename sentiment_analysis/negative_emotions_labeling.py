@@ -6,15 +6,7 @@ import os
 classifier = pipeline('zero-shot-classification', model="facebook/bart-large-mnli")
 
 # Define the labels
-labels = ["fear", "anger", "sadness", "other"]
-
-# Define the ;label thresholds
-thresholds = {
-    "fear": 0.3,
-    "anger": 0.3,
-    "sadness": 0.3,
-    "other": 0.0  # default threshold
-}
+labels = ["Fear", "Anger", "Sadness", "Joy", "Neutral"]
 
 def classify_comment(comment):
 
@@ -26,12 +18,8 @@ def classify_comment(comment):
     for label, score in zip(result["labels"], result["scores"]):
         label_scores[label] = score
     
-    # Determine the activated label based on thresholds
-    for label in ["fear", "anger", "sadness"]:
-        if label_scores[label] > thresholds[label]:
-            return label
-    
-    return "other"  
+    # Determine the activated label based on score
+    return max(label_scores, key=label_scores.get)
 
 def classify_file(file_name):
 

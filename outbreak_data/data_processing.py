@@ -21,11 +21,25 @@ data = pd.DataFrame(lines)
 
 data.to_csv('csv_files/outbreaks.csv', index=False)
 
-data['Week'] = pd.to_datetime(data['Date'], format='mixed').dt.to_period('W')
+# Ensure the Date column is of datetime type
+data['Date'] = pd.to_datetime(data['Date'], format='mixed')
+data['Month'] = data['Date'].dt.to_period('M')
 
-weekly_cases = data.groupby(['Week'])['Cases'].sum().reset_index()
-weekly_cases.to_csv('csv_files/outbreaks_weekly.csv', index=False)
+# Create a date range covering all possible months in the data
+complete_month_range = pd.period_range(
+    start=data['Month'].min(), 
+    end=data['Month'].max(), 
+    freq='M'
+)
+
+# Group by Month and cases, including months with 0 cases
+monthly_cases = data.groupby(['Month'])['Cases'].sum().reindex(complete_month_range, fill_value=0).reset_index()
+monthly_cases.columns = ['Month', 'Cases']
+
+monthly_cases.to_csv('csv_files/outbreaks_monthly.csv', index=False)
 
 for state, group in data.groupby('State'):
-    state_weekly_cases = group.groupby(['Week'])['Cases'].sum().reset_index()
-    state_weekly_cases.to_csv(f'csv_files/outbreaks_by_state/{state}.csv', index=False)
+    # Group by Month and cases, including months with 0 cases
+    state_monthly_cases = group.groupby(['Month'])['Cases'].sum().reindex(complete_month_range, fill_value=0).reset_index()
+    state_monthly_cases.columns = ['Month', 'Cases']
+    state_monthly_cases.to_csv(f'csv_files/outbreaks_by_state/{state}.csv', index=False)

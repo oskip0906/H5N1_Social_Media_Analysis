@@ -1,11 +1,11 @@
-california: 0.9619135069896954
-colorado: 0.8584126206884839
-iowa: 0.9245021605063168
-michigan: 0.8714167592809954
-minnesota: 0.9933129353077433
-ohio: 0.8806167277940242
-pennsylvania: 0.8914134443534539
-texas: 0.9193828214578202
-utah: 0.9562492174568383
-washington: 0.9500087118975497
-wisconsin: 0.9094605217020402
+california: 0.3846909156183088 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (1, 3)}
+colorado: 0.3652762897298434 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (1, 3)}
+iowa: 0.43791927495795413 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (3, 5)}
+michigan: 0.30143263017717553 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (1, 3)}
+minnesota: 0.4217913390934501 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (2, 4)}
+ohio: 0.31878291411223875 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (2, 4)}
+pennsylvania: 0.28663598261011225 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (2, 4)}
+texas: 0.32807748076579246 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (1, 3)}
+utah: 0.3161745299097375 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (2, 4)}
+washington: 0.30131369589875734 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (2, 4)}
+wisconsin: 0.4608940188527796 with params {'max_features': 500, 'n_components': 5, 'ngram_range': (3, 5)}
