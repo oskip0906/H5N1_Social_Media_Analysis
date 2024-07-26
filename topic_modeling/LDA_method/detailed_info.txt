@@ -1,0 +1,11 @@
+california: 1.0000000000000002, 0.0, with params {'max_features': 500, 'n_components': 10, 'ngram_range': (3, 5)}
+colorado: 1.0, 0.0, with params {'max_features': 200, 'n_components': 5, 'ngram_range': (3, 5)}
+iowa: 1.0000000000000002, 0.0, with params {'max_features': 1000, 'n_components': 10, 'ngram_range': (3, 5)}
+michigan: 1.0000000000000002, 0.0, with params {'max_features': 1000, 'n_components': 15, 'ngram_range': (3, 5)}
+minnesota: 1.0000000000000002, 0.0, with params {'max_features': 1000, 'n_components': 10, 'ngram_range': (3, 5)}
+ohio: 1.0000000000000002, 0.0, with params {'max_features': 1000, 'n_components': 15, 'ngram_range': (3, 5)}
+pennsylvania: 1.0, 0.0, with params {'max_features': 200, 'n_components': 5, 'ngram_range': (3, 5)}
+texas: 1.0000000000000002, 0.0, with params {'max_features': 500, 'n_components': 10, 'ngram_range': (3, 5)}
+utah: 0.9996186233271289, 0.0010025062656641604, with params {'max_features': 1000, 'n_components': 15, 'ngram_range': (3, 5)}
+washington: 1.0, 0.0, with params {'max_features': 200, 'n_components': 5, 'ngram_range': (3, 5)}
+wisconsin: 1.0000000000000002, 0.0, with params {'max_features': 1000, 'n_components': 10, 'ngram_range': (3, 5)}

@@ -3,6 +3,7 @@ from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.model_selection import ParameterGrid
 from gensim.corpora import Dictionary
 from gensim.models import CoherenceModel
+import itertools
 import pandas as pd
 import json
 import os
@@ -27,6 +28,32 @@ def calculate_coherence_score(topic_words):
     coherence_score = coherence_model.get_coherence()
 
     return coherence_score
+
+def calculate_jaccard_similarity(topic1, topic2):
+
+    set1, set2 = set(topic1), set(topic2)
+    intersection = set1.intersection(set2)
+    union = set1.union(set2)
+
+    if union:
+        return len(intersection) / len(union)
+    
+    return 0
+
+def calculate_average_jaccard_similarity(topics):
+    
+    total_similarity = 0
+    num_comparisons = 0
+    
+    # Compare every pair of topics
+    for topic1, topic2 in itertools.combinations(topics, 2):
+        total_similarity += calculate_jaccard_similarity(topic1, topic2)
+        num_comparisons += 1
+
+    if num_comparisons > 0:
+        return total_similarity / num_comparisons
+    
+    return 0
 
 def topic_modeling(comments, n_components, max_features, ngram_range):
 
@@ -53,29 +80,29 @@ def topic_modeling(comments, n_components, max_features, ngram_range):
 
     # Get the top 10 words for each topic
     for i, comp in enumerate(lda_model.components_):
-        top_words = [vocab[id] for id in comp.argsort()]
+        top_words = [vocab[id] for id in comp.argsort()][::-1][:10]
         topic_words.append(top_words)
         topics_list[f"Topic {i + 1}"] = top_words
 
     if len(topics_list) == 0:
-        return None, topics_list
+        return None, None, topics_list
 
-    return calculate_coherence_score(list(topics_list.values())), topics_list
+    return calculate_coherence_score(topic_words), calculate_average_jaccard_similarity(topic_words), topics_list
 
 if __name__ == '__main__':
 
-    # Data by state
+    # data by state
     folder = 'csv_files/classified_comments_by_state'
     files = os.listdir(folder)
 
     # Define the parameter grid
     param_grid = {
         'n_components': [5, 10, 15],
-        'max_features': [500, 1000, 1500],
+        'max_features': [200, 500, 1000],
         'ngram_range': [(1, 3), (2, 4), (3, 5)]
     }
 
-    coherence_scores = []
+    coherence_jaccard = []
 
     # Iterate through the files and find the best topics for each state 
     for file in files:
@@ -86,25 +113,31 @@ if __name__ == '__main__':
         best_score = -1
         best_params = None
         best_topics = None
+        best_coherence = None
+        best_jaccard = None
 
         for params in ParameterGrid(param_grid):
-            score, topics = topic_modeling(
+            coherence, jaccard, topics = topic_modeling(
                 state_comment, 
                 n_components=params['n_components'],
                 max_features=params['max_features'],
                 ngram_range=params['ngram_range']
             )
-            if score is not None and score > best_score:
-                best_score = score
-                best_params = params
-                best_topics = topics
+            if coherence is not None and jaccard is not None:
+                score = coherence - jaccard
+                if score > best_score:
+                    best_score = score
+                    best_coherence = coherence
+                    best_jaccard = jaccard
+                    best_params = params
+                    best_topics = topics
 
-        coherence_scores.append(f'{state}: {best_score} with params {best_params}')
+        coherence_jaccard.append(f'{state}: {best_coherence}, {best_jaccard}, with params {best_params}')
 
         # Save the best topics to a JSON file for each state
         with open(f'topic_modeling/LDA_method/topics_by_state/{state}.json', 'w') as f:
             json.dump(best_topics, f, indent=4)
 
-    # Save the coherence scores to a file
-    with open(f'topic_modeling/LDA_method/coherence_scores.txt', 'w') as file:
-        file.write('\n'.join(coherence_scores))
+    # Save the coherence and jaccard scores to a file
+    with open(f'topic_modeling/BERTopic_method/detailed_info.txt', 'w') as file:
+        file.write('\n'.join(coherence_jaccard))

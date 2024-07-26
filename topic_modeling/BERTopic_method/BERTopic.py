@@ -4,6 +4,7 @@ from sklearn.model_selection import ParameterGrid
 import hdbscan 
 from gensim.corpora import Dictionary
 from gensim.models import CoherenceModel
+import itertools
 import pandas as pd
 import json
 import os
@@ -29,6 +30,32 @@ def calculate_coherence_score(topic_words):
 
     return coherence_score
 
+def calculate_jaccard_similarity(topic1, topic2):
+
+    set1, set2 = set(topic1), set(topic2)
+    intersection = set1.intersection(set2)
+    union = set1.union(set2)
+
+    if union:
+        return len(intersection) / len(union)
+    
+    return 0
+
+def calculate_average_jaccard_similarity(topics):
+    
+    total_similarity = 0
+    num_comparisons = 0
+    
+    # Compare every pair of topics
+    for topic1, topic2 in itertools.combinations(topics, 2):
+        total_similarity += calculate_jaccard_similarity(topic1, topic2)
+        num_comparisons += 1
+
+    if num_comparisons > 0:
+        return total_similarity / num_comparisons
+    
+    return 0
+
 def topic_modeling(comments, min_cluster_size, min_samples, max_features, ngram_range):
 
     processed_comments = []
@@ -53,20 +80,22 @@ def topic_modeling(comments, min_cluster_size, min_samples, max_features, ngram_
     topic_model.fit_transform(processed_comments)
     
     topics_list = {}
+    topic_words = []
 
     i = 0
-    while topic_model.get_topic(i) != False:
-        subtopics = topic_model.get_topic(i)
-        subtopics_list = []
-        for subtopic in subtopics:
-            subtopics_list.append(subtopic[0])
+    while True:
+        topic = topic_model.get_topic(i)
+        if not topic:
+            break
+        subtopics_list = [word for word, _ in topic]
         topics_list[f"Topic {i + 1}"] = subtopics_list
+        topic_words.append(subtopics_list)
         i += 1
 
     if len(topics_list) == 0:
-        return None, topics_list
+        return None, None, topics_list
 
-    return calculate_coherence_score(list(topics_list.values())), topics_list
+    return calculate_coherence_score(topic_words), calculate_average_jaccard_similarity(topic_words), topics_list
 
 if __name__ == '__main__':
 
@@ -74,15 +103,15 @@ if __name__ == '__main__':
     folder = 'csv_files/classified_comments_by_state'
     files = os.listdir(folder)
 
-   # Define the parameter grid
+    # Define the parameter grid
     param_grid = {
-        'min_cluster_size': [2, 4],
-        'min_samples': [2, 4],
-        'max_features': [500, 1000, 1500],
+        'min_cluster_size': [2, 5],
+        'min_samples': [2, 5],
+        'max_features': [200, 500, 1000],
         'ngram_range': [(1, 3), (2, 4), (3, 5)]
     }
 
-    coherence_scores = []
+    coherence_jaccard = []
 
     # Iterate through the files and find the best topics for each state 
     for file in files:
@@ -93,26 +122,32 @@ if __name__ == '__main__':
         best_score = -1
         best_params = None
         best_topics = None
+        best_coherence = None
+        best_jaccard = None
 
         for params in ParameterGrid(param_grid):
-            score, topics = topic_modeling(
+            coherence, jaccard, topics = topic_modeling(
                 state_comment, 
                 min_cluster_size=params['min_cluster_size'],
                 min_samples=params['min_samples'],
                 max_features=params['max_features'],
                 ngram_range=params['ngram_range']
             )
-            if score is not None and score > best_score:
-                best_score = score
-                best_params = params
-                best_topics = topics
+            if coherence is not None and jaccard is not None:
+                score = coherence - jaccard
+                if score > best_score:
+                    best_score = score
+                    best_coherence = coherence
+                    best_jaccard = jaccard
+                    best_params = params
+                    best_topics = topics
 
-        coherence_scores.append(f'{state}: {best_score} with params {best_params}')
+        coherence_jaccard.append(f'{state}: {best_coherence}, {best_jaccard}, with params {best_params}')
 
         # Save the best topics to a JSON file for each state
         with open(f'topic_modeling/BERTopic_method/topics_by_state/{state}.json', 'w') as f:
             json.dump(best_topics, f, indent=4)
 
-    # Save the coherence scores to a file
-    with open(f'topic_modeling/BERTopic_method/coherence_scores.txt', 'w') as file:
-        file.write('\n'.join(coherence_scores))
+    # Save the coherence and jaccard scores to a file
+    with open(f'topic_modeling/BERTopic_method/detailed_info.txt', 'w') as file:
+        file.write('\n'.join(coherence_jaccard))

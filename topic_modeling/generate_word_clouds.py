@@ -29,5 +29,5 @@ def make_word_clouds(folder):
             plt.savefig(f'{specific_folder}/word_clouds_by_state/{state}.png')
             plt.close()
 
-make_word_clouds('topic_modeling/BERTopic_method/topics_by_state')
+# make_word_clouds('topic_modeling/BERTopic_method/topics_by_state')
 make_word_clouds('topic_modeling/LDA_method/topics_by_state')
