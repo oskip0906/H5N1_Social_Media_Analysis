@@ -1,0 +1,11 @@
+california: Coherence - 0.9995602132280497, Jaccard - 0.0010025062656641604, Params - {'max_features': 1000, 'min_cluster_size': 5, 'min_samples': 2, 'ngram_range': (3, 5)}
+colorado: Coherence - 0.9986077571047322, Jaccard - 0.0021859872967906206, Params - {'max_features': 1000, 'min_cluster_size': 2, 'min_samples': 5, 'ngram_range': (3, 5)}
+iowa: Coherence - 0.9947944680004112, Jaccard - 0.009523809523809525, Params - {'max_features': 500, 'min_cluster_size': 2, 'min_samples': 2, 'ngram_range': (3, 5)}
+michigan: Coherence - 0.9923566844238682, Jaccard - 0.008028404344193817, Params - {'max_features': 1000, 'min_cluster_size': 2, 'min_samples': 2, 'ngram_range': (2, 4)}
+minnesota: Coherence - 0.999554709368261, Jaccard - 0.0011063011063011062, Params - {'max_features': 1000, 'min_cluster_size': 2, 'min_samples': 2, 'ngram_range': (3, 5)}
+ohio: Coherence - 0.9997498857670662, Jaccard - 0.0006747638326585695, Params - {'max_features': 500, 'min_cluster_size': 2, 'min_samples': 2, 'ngram_range': (3, 5)}
+pennsylvania: Coherence - 0.9987085496846443, Jaccard - 0.002976190476190476, Params - {'max_features': 200, 'min_cluster_size': 2, 'min_samples': 2, 'ngram_range': (3, 5)}
+texas: Coherence - 0.9993718830219155, Jaccard - 0.001594896331738437, Params - {'max_features': 1000, 'min_cluster_size': 2, 'min_samples': 5, 'ngram_range': (3, 5)}
+utah: Coherence - 0.9995785823267248, Jaccard - 0.0011695906432748538, Params - {'max_features': 1000, 'min_cluster_size': 2, 'min_samples': 2, 'ngram_range': (3, 5)}
+washington: Coherence - 0.9991115872891613, Jaccard - 0.001404278239458295, Params - {'max_features': 1000, 'min_cluster_size': 2, 'min_samples': 2, 'ngram_range': (3, 5)}
+wisconsin: Coherence - 0.9864106094442441, Jaccard - 0.04518518518518518, Params - {'max_features': 500, 'min_cluster_size': 2, 'min_samples': 2, 'ngram_range': (3, 5)}

@@ -89,55 +89,83 @@ def topic_modeling(comments, n_components, max_features, ngram_range):
 
     return calculate_coherence_score(topic_words), calculate_average_jaccard_similarity(topic_words), topics_list
 
-if __name__ == '__main__':
+def find_best_topics(comments):
 
-    # data by state
-    folder = 'csv_files/classified_comments_by_state'
-    files = os.listdir(folder)
-
-    # Define the parameter grid
     param_grid = {
         'n_components': [5, 10, 15],
         'max_features': [200, 500, 1000],
         'ngram_range': [(1, 3), (2, 4), (3, 5)]
     }
 
-    coherence_jaccard = []
+    best_score = -1
+    best_coherence = 0
+    best_jaccard = 0
+    best_topics = None
+    best_params = None
+
+    for params in ParameterGrid(param_grid):
+        coherence, jaccard, topics = topic_modeling(
+            comments, 
+            n_components=params['n_components'],
+            max_features=params['max_features'], 
+            ngram_range=params['ngram_range']
+        )
+        if coherence and jaccard:
+            score = coherence - jaccard
+            if score > best_score:
+                best_score = score
+                best_coherence = coherence
+                best_jaccard = jaccard
+                best_topics = topics
+                best_params = params
+
+    return best_coherence, best_jaccard, best_params, best_topics
+
+if __name__ == '__main__':
+
+    # Comments by state
+    folder1 = 'csv_files/classified_comments_by_state'
+    files1 = os.listdir(folder1)
+    
+    # negative comments by state
+    folder2 = 'csv_files/negative_comments_by_state'
+    files2 = os.listdir(folder2)
+
+    files = []
+    for file1, file2 in zip(files1, files2):
+        files.append((file1, file2))
+
+    coherence_jaccard1 = []
+    coherence_jaccard2 = []
 
     # Iterate through the files and find the best topics for each state 
-    for file in files:
-        state = file[:-4].split('/')[-1]
-        state_data = pd.read_csv(f'{folder}/{file}')
-        state_comment = state_data['Comment'].tolist()
+    for file1, file2 in files:
         
-        best_score = -1
-        best_params = None
-        best_topics = None
-        best_coherence = None
-        best_jaccard = None
+        state = file1[:-4]
+        state_data = pd.read_csv(f'{folder1}/{file1}')
+        state_comment = state_data['Comment'].tolist()
 
-        for params in ParameterGrid(param_grid):
-            coherence, jaccard, topics = topic_modeling(
-                state_comment, 
-                n_components=params['n_components'],
-                max_features=params['max_features'],
-                ngram_range=params['ngram_range']
-            )
-            if coherence is not None and jaccard is not None:
-                score = coherence - jaccard
-                if score > best_score:
-                    best_score = score
-                    best_coherence = coherence
-                    best_jaccard = jaccard
-                    best_params = params
-                    best_topics = topics
+        best_coherence, best_jaccard, best_params, best_topics = find_best_topics(state_comment)
+        coherence_jaccard1.append(f'{state}: Coherence - {best_coherence}, Jaccard - {best_jaccard}, Params - {best_params}')
 
-        coherence_jaccard.append(f'{state}: {best_coherence}, {best_jaccard}, with params {best_params}')
+        # Write the results to a file
+        with open(f'topic_modeling/LDA_method/topics_by_state/{state}.json', 'w') as file:
+            json.dump(best_topics, file)
 
-        # Save the best topics to a JSON file for each state
-        with open(f'topic_modeling/LDA_method/topics_by_state/{state}.json', 'w') as f:
-            json.dump(best_topics, f, indent=4)
+        state = file2[:-4]
+        state_data = pd.read_csv(f'{folder2}/{file2}')
+        state_comment = state_data['Comment'].tolist()
 
-    # Save the coherence and jaccard scores to a file
-    with open(f'topic_modeling/BERTopic_method/detailed_info.txt', 'w') as file:
-        file.write('\n'.join(coherence_jaccard))
+        best_coherence, best_jaccard, best_params, best_topics = find_best_topics(state_comment)
+        coherence_jaccard2.append(f'{state}: Coherence - {best_coherence}, Jaccard - {best_jaccard}, Params - {best_params}')
+
+        # Write the results to a file
+        with open(f'topic_modeling/LDA_method/negative_topics_by_state/{state}.json', 'w') as file:
+            json.dump(best_topics, file)
+
+    # Save the coherence and jaccard scores to files
+    with open(f'topic_modeling/LDA_method/detailed_info_overall.txt', 'w') as file:
+        file.write('\n'.join(coherence_jaccard1))
+
+    with open(f'topic_modeling/LDA_method/detailed_info_negative_comments.txt', 'w') as file:
+        file.write('\n'.join(coherence_jaccard2))

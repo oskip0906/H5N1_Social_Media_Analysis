@@ -17,17 +17,29 @@ def make_word_clouds(folder):
 
         state = file.split('.')[0]
 
+        text = ''
+
         for topic, words in data.items():
-            
-            text = ' '.join(words)
+            text += ' '.join(words)
 
-            wordcloud = WordCloud(background_color="white", height=400, width=800).generate(text)
-            
-            plt.figure(figsize=(12, 8))
-            plt.imshow(wordcloud, interpolation='bilinear') 
-            plt.axis('off')
-            plt.savefig(f'{specific_folder}/word_clouds_by_state/{state}.png')
-            plt.close()
+        filtered_words = []
 
-# make_word_clouds('topic_modeling/BERTopic_method/topics_by_state')
+        for word in text.split():
+            # Remove common terms used in data collection
+            if word.lower() not in ['bird', 'avian', 'flu', 'influenza', 'h5n1']:
+                filtered_words.append(word)
+
+        text = ' '.join(filtered_words)
+
+        # print(text)
+
+        wordcloud = WordCloud(background_color="white", height=400, width=800).generate(text)
+        
+        plt.figure(figsize=(12, 8))
+        plt.imshow(wordcloud, interpolation='bilinear') 
+        plt.axis('off')
+        plt.savefig(f'{specific_folder}/word_clouds_by_state/{state}.png')
+        plt.close()
+
+make_word_clouds('topic_modeling/BERTopic_method/topics_by_state')
 make_word_clouds('topic_modeling/LDA_method/topics_by_state')

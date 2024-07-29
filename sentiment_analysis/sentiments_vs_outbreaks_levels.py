@@ -28,9 +28,6 @@ def generate_correlation_graph(sentiment):
     max_val_score = sentiments_data['score'].max()
     sentiments_data['score'] = (sentiments_data['score'] - min_val_score) / (max_val_score - min_val_score) * 100
 
-    # Shift the scores data back by 1 month for interesting discoveries
-    sentiments_data.index = sentiments_data.index - pd.DateOffset(months=1)
-
     # Normalize the cases values
     cases_data['Month'] = pd.to_datetime(cases_data['Month'], format='%Y-%m')
     min_val_cases = cases_data['Cases'].min()
@@ -39,34 +36,49 @@ def generate_correlation_graph(sentiment):
 
     cases_data.set_index('Month', inplace=True)
 
+    # Shift the sentiments data back by one month for exploration
+    sentiments_data = sentiments_data.shift(-1, freq='ME')
+
     # print(sentiments_data)
     # print(cases_data)
 
     # Calculate Pearson correlation
     sentiment_levels = []
     cases_levels = []
+    months = []
 
-    for date in sentiments_data.index:
-        month = date.strftime('%Y-%m')
-        for month in cases_data.index:
-            if date.strftime('%Y-%m') == month.strftime('%Y-%m'):
-                sentiment_levels.append(sentiments_data.loc[date, 'score'])
-                cases_levels.append(cases_data.loc[month, 'Cases'])
+    for date1 in sentiments_data.index:
+        month1 = date1.strftime('%Y-%m')
+        for date2 in cases_data.index:
+            month2 = date2.strftime('%Y-%m')
+            if month1 == month2:
+                sentiment_levels.append(sentiments_data.loc[date1, 'score'])
+                cases_levels.append(cases_data.loc[date2, 'Cases'])
+                months.append(month1)
 
     correlation, _ = pearsonr(sentiment_levels, cases_levels)
 
+    all_months = pd.date_range(
+        start=months[0],
+        end=months[-1],
+        freq='MS'
+    )
+
     # Plotting the data in a line graph
-    plt.figure(figsize=(14, 7))
-
-    plt.plot(sentiments_data.index, sentiments_data['score'], label=f'{sentiment} Level')
-    plt.plot(cases_data.index, cases_data['Cases'], label='Cases')
-
+    plt.figure(figsize=(15, 8))
+    plt.xticks(all_months, rotation=45)
+    plt.gca().set_xticks(all_months)
+    plt.gca().set_xticklabels([date.strftime('%Y-%m') for date in all_months])
+    plt.plot(all_months, sentiment_levels, label=f'{sentiment} Level')
+    plt.plot(all_months, cases_levels, label='Cases')
     plt.xlabel('Date (Year - Month)')
     plt.ylabel('Normalized Value (0-100)')
-    plt.legend()
+    plt.legend(loc='upper right')
     plt.text(0.5, 1.05, f"Pearson correlation coefficient: {correlation.round(3)}", ha='center', transform=plt.gca().transAxes)
-    plt.savefig(f"graphs/outbreaks_vs_{sentiment}_levels_shifted.png")
+    plt.savefig(f"graphs/adjusted_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
 
+generate_correlation_graph('Sadness')
 generate_correlation_graph('Fear')
-# generate_correlation_graph('Anger')
-# generate_correlation_graph('Joy')
+generate_correlation_graph('Anger')
+generate_correlation_graph('Joy')
+generate_correlation_graph('Surprise')

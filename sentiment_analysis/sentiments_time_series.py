@@ -11,7 +11,11 @@ def plot_time_series(data, state):
     monthly_data = data_grouped.resample('ME').sum()
 
     # Ensure all months are included in the x-axis
-    all_months = pd.date_range(start=monthly_data.index.min(), end=monthly_data.index.max(), freq='MS')
+    all_months = pd.date_range(
+        start=monthly_data.index.min(), 
+        end=monthly_data.index.max(), 
+        freq='MS'
+    )
 
     plt.figure(figsize=(20, 10))
     plt.xticks(all_months, rotation=45)
@@ -23,7 +27,7 @@ def plot_time_series(data, state):
 
     plt.xlabel('Date (Year-Month)')
     plt.ylabel('Number of Posts')
-    plt.legend()
+    plt.legend(loc='upper right')
     if state: 
         plt.savefig(f'graphs/sentiments_time_series_by_state/{state}.png')
     else:
