@@ -11,7 +11,7 @@ import json
 import os
 
 import sys
-sys.path.append('topic_modeling')
+sys.path.append('topic_modeling')   
 from process_comments import preprocess_comment
 
 def calculate_coherence_score(topic_words):
