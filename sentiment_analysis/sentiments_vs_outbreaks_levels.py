@@ -37,7 +37,7 @@ def generate_correlation_graph(sentiment):
     cases_data.set_index('Month', inplace=True)
 
     # Shift the sentiments data back by one month for exploration
-    sentiments_data = sentiments_data.shift(-1, freq='ME')
+    # sentiments_data = sentiments_data.shift(-1, freq='ME')
 
     # print(sentiments_data)
     # print(cases_data)
@@ -75,10 +75,9 @@ def generate_correlation_graph(sentiment):
     plt.ylabel('Normalized Value (0-100)')
     plt.legend(loc='upper right')
     plt.text(0.5, 1.05, f"Pearson correlation coefficient: {correlation.round(3)}", ha='center', transform=plt.gca().transAxes)
-    plt.savefig(f"graphs/adjusted_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
+    plt.savefig(f"graphs/outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
 
 generate_correlation_graph('Sadness')
 generate_correlation_graph('Fear')
 generate_correlation_graph('Anger')
 generate_correlation_graph('Joy')
-generate_correlation_graph('Surprise')

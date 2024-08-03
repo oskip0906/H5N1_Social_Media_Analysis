@@ -19,7 +19,8 @@ def make_topics_sentences(folder):
         text = ''
 
         for topic, words in data.items():
-            text += ' '.join(words)
+            sentence = ' '.join(words)
+            text += ' '.join(set(sentence.split(' ')))
             text += '\n'
 
         if folder.split('/')[2] == 'negative_topics_by_state':
