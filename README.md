@@ -9,7 +9,7 @@ To conduct a comprehensive analysis of social media posts related to H5N1 outbre
   
 - **Python Packages:** [PyPI](https://pypi.org/)
   
-- **Sentiment Classification:** [BERT-base-uncased]([https://huggingface.co/facebook/bart-large-mnli](https://huggingface.co/google-bert/bert-base-uncased))
+- **Sentiment Classification:** [BERT-base-uncased](https://huggingface.co/google-bert/bert-base-uncased)
   
 - **Topic Modeling:** [BERTopic](https://maartengr.github.io/BERTopic/index.html)
 
