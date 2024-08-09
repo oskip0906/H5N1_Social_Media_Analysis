@@ -13,7 +13,9 @@ To conduct a comprehensive analysis of social media posts related to H5N1 outbre
 
   - **Training Dataset:** [Emotions from Kaggle](https://www.kaggle.com/datasets/nelgiriyewithana/emotions)
   
-- **Topic Modeling:** [BERTopic](https://maartengr.github.io/BERTopic/index.html)
+- **Topic Modeling:**
+  - [BERTopic](https://maartengr.github.io/BERTopic/index.html)
+  - [Latent Dirichlet Allocation](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.LatentDirichletAllocation.html)
 
 ## Requirements
 
