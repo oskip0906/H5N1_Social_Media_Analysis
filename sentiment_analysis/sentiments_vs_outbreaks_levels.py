@@ -7,7 +7,12 @@ def generate_correlation_graph(sentiment):
     sentiments_data = pd.read_csv('csv_files/classified_comments.csv')
     cases_data = pd.read_csv('csv_files/outbreaks_monthly.csv')
 
-    sentiments_data = sentiments_data[sentiments_data['Sentiment'] == sentiment]
+    if sentiment == 'Overall':
+        sentiments = ['Sadness', 'Fear', 'Anger', 'Joy', 'Neutral', 'Surprise', 'Love']
+    else:
+        sentiments = [sentiment]
+
+    sentiments_data = sentiments_data[sentiments_data['Sentiment'].isin(sentiments)]
 
     sentiments_data['Date'] = pd.to_datetime(sentiments_data['Date']).dt.to_period('M')
 
@@ -18,7 +23,7 @@ def generate_correlation_graph(sentiment):
     ).fillna(0)
 
     data_grouped.index = data_grouped.index.to_timestamp()
-    sentiments_data = data_grouped.resample('ME').sum().fillna(0)
+    sentiments_data = data_grouped.resample('M').sum().fillna(0)
 
     # Comphrehensive score 
     sentiments_data['score'] = sentiments_data['sentiment_count'] * sentiments_data['intensity']
@@ -37,7 +42,7 @@ def generate_correlation_graph(sentiment):
     cases_data.set_index('Month', inplace=True)
 
     # Shift the sentiments data back by one month for exploration
-    # sentiments_data = sentiments_data.shift(-1, freq='ME')
+    sentiments_data = sentiments_data.shift(-1, freq='M')
 
     # print(sentiments_data)
     # print(cases_data)
@@ -75,9 +80,13 @@ def generate_correlation_graph(sentiment):
     plt.ylabel('Normalized Value (0-100)')
     plt.legend(loc='upper right')
     plt.text(0.5, 1.05, f"Pearson correlation coefficient: {correlation.round(3)}", ha='center', transform=plt.gca().transAxes)
-    plt.savefig(f"graphs/outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
+    # plt.savefig(f"graphs/outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
+    plt.savefig(f"graphs/adjusted_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
 
 generate_correlation_graph('Sadness')
 generate_correlation_graph('Fear')
 generate_correlation_graph('Anger')
 generate_correlation_graph('Joy')
+
+# All sentiments combined into 1 graph
+generate_correlation_graph('Overall')
