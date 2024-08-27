@@ -8,9 +8,7 @@ files = os.listdir(folder)
 for file in files:
 
     data = pd.read_csv(f'{folder}/{file}')
-
     state = file[:-4].split('/')[-1]
-
     sorted_labels = data['Sentiment'].value_counts().to_dict()
 
     plt.figure(figsize=(12, 6))
