@@ -5,7 +5,7 @@ from scipy.stats import pearsonr
 def generate_correlation_graph(sentiment):
 
     sentiments_data = pd.read_csv('csv_files/classified_comments.csv')
-    cases_data = pd.read_csv('csv_files/outbreaks_monthly.csv')
+    outbreaks_data = pd.read_csv('csv_files/outbreaks_monthly.csv')
 
     if sentiment == 'Overall':
         sentiments = ['Sadness', 'Fear', 'Anger', 'Joy', 'Neutral', 'Surprise', 'Love']
@@ -34,18 +34,18 @@ def generate_correlation_graph(sentiment):
     sentiments_data['score'] = (sentiments_data['score'] - min_val_score) / (max_val_score - min_val_score) * 100
 
     # Normalize the cases values
-    cases_data['Month'] = pd.to_datetime(cases_data['Month'], format='%Y-%m')
-    min_val_cases = cases_data['Cases'].min()
-    max_val_cases = cases_data['Cases'].max()
-    cases_data['Cases'] = (cases_data['Cases'] - min_val_cases) / (max_val_cases - min_val_cases) * 100
+    outbreaks_data['Month'] = pd.to_datetime(outbreaks_data['Month'], format='%Y-%m')
+    min_val_cases = outbreaks_data['Cases'].min()
+    max_val_cases = outbreaks_data['Cases'].max()
+    outbreaks_data['Cases'] = (outbreaks_data['Cases'] - min_val_cases) / (max_val_cases - min_val_cases) * 100
 
-    cases_data.set_index('Month', inplace=True)
+    outbreaks_data.set_index('Month', inplace=True)
 
     # Shift the sentiments data back by one month for exploration
     sentiments_data = sentiments_data.shift(-1, freq='M')
 
     # print(sentiments_data)
-    # print(cases_data)
+    # print(outbreaks_data)
 
     # Calculate Pearson correlation
     sentiment_levels = []
@@ -54,11 +54,11 @@ def generate_correlation_graph(sentiment):
 
     for date1 in sentiments_data.index:
         month1 = date1.strftime('%Y-%m')
-        for date2 in cases_data.index:
+        for date2 in outbreaks_data.index:
             month2 = date2.strftime('%Y-%m')
             if month1 == month2:
                 sentiment_levels.append(sentiments_data.loc[date1, 'score'])
-                cases_levels.append(cases_data.loc[date2, 'Cases'])
+                cases_levels.append(outbreaks_data.loc[date2, 'Cases'])
                 months.append(month1)
 
     correlation, _ = pearsonr(sentiment_levels, cases_levels)
@@ -75,7 +75,7 @@ def generate_correlation_graph(sentiment):
     plt.gca().set_xticks(all_months)
     plt.gca().set_xticklabels([date.strftime('%Y-%m') for date in all_months])
     plt.plot(all_months, sentiment_levels, label=f'{sentiment} Level')
-    plt.plot(all_months, cases_levels, label='Cases')
+    plt.plot(all_months, cases_levels, label='Outbreaks Level')
     plt.xlabel('Date (Year - Month)')
     plt.ylabel('Normalized Value (0-100)')
     plt.legend(loc='upper right')

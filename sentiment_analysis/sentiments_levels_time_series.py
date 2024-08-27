@@ -15,15 +15,10 @@ def generate_scores(data, sentiment):
     ).fillna(0)
 
     data_grouped.index = data_grouped.index.to_timestamp()
-    data = data_grouped.resample('ME').sum().fillna(0)
+    data = data_grouped.resample('M').sum().fillna(0)
 
     # Comprehensive score 
     data['score'] = data['sentiment_count'] * data['intensity']
-
-    # Normalize the sentiment intensity values
-    min_val_score = data['score'].min()
-    max_val_score = data['score'].max()
-    data['score'] = (data['score'] - min_val_score) / (max_val_score - min_val_score) * 100
 
     return data
 
@@ -41,10 +36,11 @@ def plot_sentiment_levels_graphs(data, state):
     scores_dict = {}
     
     for sentiment in data_grouped.columns.levels[1]:
-        sentiment_data = data_grouped.xs(sentiment, level=1, axis=1)
-        sentiment_data = sentiment_data.reset_index()
-        scores = generate_scores(data, sentiment)
-        scores_dict[sentiment] = scores['score']
+        if sentiment != 'Neutral':
+            sentiment_data = data_grouped.xs(sentiment, level=1, axis=1)
+            sentiment_data = sentiment_data.reset_index()
+            scores = generate_scores(data, sentiment)
+            scores_dict[sentiment] = scores['score']
     
      # Ensure all months are included in the x-axis
     all_months = pd.date_range(
@@ -60,10 +56,10 @@ def plot_sentiment_levels_graphs(data, state):
 
     # Plot only the scores
     for sentiment, scores in scores_dict.items():
-        plt.plot(scores.index, scores, label=f'{sentiment} Score')
+        plt.plot(scores.index, scores, label=f'{sentiment} Level')
 
     plt.xlabel('Date (Year-Month)')
-    plt.ylabel('Normalized Score')
+    plt.ylabel('Intensity Level')
     plt.legend(loc='upper right')
     if state: 
         plt.savefig(f'graphs/sentiments_levels_time_series_by_state/{state}.png')
