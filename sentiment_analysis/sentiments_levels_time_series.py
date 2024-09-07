@@ -58,7 +58,7 @@ def plot_sentiment_levels_graphs(data, state):
     for sentiment, scores in scores_dict.items():
         plt.plot(scores.index, scores, label=f'{sentiment} Level')
 
-    plt.xlabel('Date (Year-week)')
+    plt.xlabel('Date')
     plt.ylabel('Intensity Level')
     plt.legend(loc='upper right')
     if state: 

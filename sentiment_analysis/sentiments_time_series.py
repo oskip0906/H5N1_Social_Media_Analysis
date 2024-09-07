@@ -25,7 +25,7 @@ def plot_time_series(data, state):
     for sentiment in monthly_data.columns:
         plt.plot(monthly_data.index, monthly_data[sentiment], label=sentiment)
 
-    plt.xlabel('Date (Year-Month)')
+    plt.xlabel('Date')
     plt.ylabel('Number of Posts')
     plt.legend(loc='upper right')
     if state: 
