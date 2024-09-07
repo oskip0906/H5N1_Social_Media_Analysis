@@ -6,16 +6,16 @@ def generate_scores(data, sentiment):
 
     data = data[data['Sentiment'] == sentiment]
 
-    data.loc[:, 'Date'] = pd.to_datetime(data['Date']).dt.to_period('M')
+    data.loc[:, 'Date'] = pd.to_datetime(data['Date']).dt.to_period('W')
 
-    # Group by month and calculate mean intensity and count of sentiments
+    # Group by week and calculate mean intensity and count of sentiments
     data_grouped = data.groupby(data['Date']).agg(
         sentiment_count=('Sentiment', 'size'), 
         intensity=('Intensity', 'mean')
     ).fillna(0)
 
     data_grouped.index = data_grouped.index.to_timestamp()
-    data = data_grouped.resample('M').sum().fillna(0)
+    data = data_grouped.resample('W').sum().fillna(0)
 
     # Comprehensive score 
     data['score'] = data['sentiment_count'] * data['intensity']
@@ -42,23 +42,23 @@ def plot_sentiment_levels_graphs(data, state):
             scores = generate_scores(data, sentiment)
             scores_dict[sentiment] = scores['score']
     
-     # Ensure all months are included in the x-axis
-    all_months = pd.date_range(
+     # Ensure all weeks are included in the x-axis
+    all_weeks = pd.date_range(
         start=min(scores.index.min() for scores in scores_dict.values()), 
         end=max(scores.index.max() for scores in scores_dict.values()), 
-        freq='MS'
+        freq='4W'
     )
     
     plt.figure(figsize=(20, 10))
     plt.xticks(rotation=45)
-    plt.gca().set_xticks(all_months)
-    plt.gca().set_xticklabels([date.strftime('%Y-%m') for date in all_months])
+    plt.gca().set_xticks(all_weeks)
+    plt.gca().set_xticklabels([date.strftime('%Y-%m-%d') for date in all_weeks])
 
     # Plot only the scores
     for sentiment, scores in scores_dict.items():
         plt.plot(scores.index, scores, label=f'{sentiment} Level')
 
-    plt.xlabel('Date (Year-Month)')
+    plt.xlabel('Date (Year-week)')
     plt.ylabel('Intensity Level')
     plt.legend(loc='upper right')
     if state: 

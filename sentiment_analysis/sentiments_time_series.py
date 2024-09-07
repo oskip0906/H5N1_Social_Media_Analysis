@@ -8,7 +8,7 @@ def plot_time_series(data, state):
     data_grouped = data.groupby(['Date', 'Sentiment']).size().unstack(fill_value=0)
     data_grouped.index = pd.to_datetime(data_grouped.index)
 
-    monthly_data = data_grouped.resample('ME').sum()
+    monthly_data = data_grouped.resample('M').sum()
 
     # Ensure all months are included in the x-axis
     all_months = pd.date_range(

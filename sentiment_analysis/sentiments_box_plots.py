@@ -67,6 +67,7 @@ plt.savefig('graphs/sentiments_intensities_box_plot_overall.png')
 
 # For overall data with states seperated
 comprehensive_data = comprehensive_data[comprehensive_data['Sentiment'].isin(sentiment_labels)]
+comprehensive_data = comprehensive_data[comprehensive_data['State']!='excluded_states']
 
 plt.figure(figsize=(24, 24))
 axis = sns.boxplot(x='State', y='Intensity', hue='Sentiment', data=comprehensive_data) 

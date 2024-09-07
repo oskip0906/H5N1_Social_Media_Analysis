@@ -22,6 +22,7 @@ for file in files:
 data = pd.read_csv('csv_files/classified_comments.csv')
 
 sorted_labels = data['Sentiment'].value_counts().to_dict()
+print(sorted_labels)
 
 plt.figure(figsize=(12, 6))
 plt.bar(sorted_labels.keys(), sorted_labels.values())

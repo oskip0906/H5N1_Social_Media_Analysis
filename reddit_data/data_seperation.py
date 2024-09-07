@@ -7,22 +7,7 @@ with open('reddit_data/states_to_subreddits.json', 'r') as file:
 
 comments_df = pd.read_csv("csv_files/comments.csv")
 
-states_counts = {
-    'minnesota': 0, 
-    'south_dakota': 0, 
-    'california': 0, 
-    'pennsylvania': 0, 
-    'iowa': 0, 
-    'colorado': 0, 
-    'wisconsin': 0, 
-    'michigan': 0, 
-    'ohio': 0, 
-    'texas': 0, 
-    'washington': 0, 
-    'utah': 0, 
-    'maryland': 0, 
-    'kansas': 0
-}
+print(len(comments_df))
 
 # Updated mapping of subreddits to their respective states
 subreddits_to_states = {
@@ -44,10 +29,11 @@ subreddits_to_states = {
     **dict.fromkeys(states_to_subreddits['kansas_subreddits'], 'kansas')
 }
 
-
 subreddits = comments_df['Subreddit'].value_counts().to_dict()
 
 states_dfs = {state: pd.DataFrame() for state in set(subreddits_to_states.values())}
+
+excluded_states_dfs = pd.DataFrame()
 
 for subreddit in subreddits:
     state = subreddits_to_states.get(subreddit)
@@ -58,5 +44,8 @@ for subreddit in subreddits:
 
 for state, state_df in states_dfs.items():
     if state_df.shape[0] < 50:
-        continue
-    state_df.to_csv(f'csv_files/comments_by_state/{state}.csv', index=False)
+        excluded_states_dfs = pd.concat([excluded_states_dfs, state_df])
+    else:
+        state_df.to_csv(f'csv_files/comments_by_state/{state}.csv', index=False)
+
+excluded_states_dfs.to_csv('csv_files/comments_by_state/excluded_states.csv', index=False)

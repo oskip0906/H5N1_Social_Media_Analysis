@@ -14,7 +14,8 @@ link_structure = 'https://api.pullpush.io/reddit/search/comment/?'
 param_structure = {
     'sort': 'asc',
     'size': 100,
-    'after': int(datetime.strptime('2022-02-08', "%Y-%m-%d").timestamp())
+    'after': int(datetime.strptime('2022-02-01', "%Y-%m-%d").timestamp()),
+    'before': int(datetime.strptime('2024-07-31', "%Y-%m-%d").timestamp())
 }
 
 # Define search queries
@@ -35,6 +36,10 @@ parameters = [
         'q': 'h5n1',
         'param_structure': param_structure
     },
+    {
+        'q': 'hpai',
+        'param_structure': param_structure
+    }
 ]
 
 comments_links = []
@@ -62,19 +67,24 @@ for subreddit in all_subreddits:
 comments_data = []
 
 for link in links:
-    comment_response = requests.get(link)
-    comments = comment_response.json()
-    count = 0
-    for comment in comments['data']:
-        try:
-            date = datetime.fromtimestamp(comment['created_utc']).strftime('%Y-%m-%d %H:%M:%S')
-            subreddit = link.split('&')[-1].split('=')[-1]
-            comments_data.append({'Comment': comment['body'], 'Date': date, 'Subreddit': subreddit})
-            count += 1
-        except Exception as e:
-            print(f"error processing comment")
-            continue
-    print(count)
+    try:
+        comment_response = requests.get(link)
+        comments = comment_response.json()
+        count = 0
+        for comment in comments['data']:
+            if len(comment['body']) >= 5:
+                try:
+                    date = datetime.fromtimestamp(comment['created_utc']).strftime('%Y-%m-%d %H:%M:%S')
+                    subreddit = link.split('&')[-1].split('=')[-1]
+                    comments_data.append({'Comment': comment['body'], 'Date': date, 'Subreddit': subreddit})
+                    count += 1
+                except Exception as e:
+                    print(f"error processing comment")
+                    continue
+        print(count)
+    except Exception as e:
+        print(f"error processing link: {link}")
+        continue
 
 df = pd.DataFrame(comments_data)
 
