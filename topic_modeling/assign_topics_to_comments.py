@@ -35,7 +35,8 @@ def comment_to_topic(comment, topics):
     for subtopics in topics.values():
         filtered_subtopic = ""
         for word in " ".join(subtopics).split():
-            if word.lower() not in ['bird', 'avian', 'flu', 'influenza', 'h5n1']:
+            #  Remove common terms used in data collection
+            if word.lower() not in ['bird', 'birds', 'avian', 'flu', 'influenza', 'h5n1']:
                 filtered_subtopic += word + " "
         topic_texts.append(filtered_subtopic.strip())
 
@@ -49,7 +50,11 @@ def comment_to_topic(comment, topics):
     
     # Find topic with highest similarity
     highest_similarity_index = similarities.argmax()
-    assigned_topic = list(topics.keys())[highest_similarity_index]
+
+    if similarities.max() < 0.01:
+        assigned_topic = 'No Topic'
+    else:
+        assigned_topic = list(topics.keys())[highest_similarity_index]
     
     return assigned_topic, similarities[highest_similarity_index]
 
@@ -57,6 +62,10 @@ folder = 'csv_files/classified_comments_by_state'
 files = os.listdir(folder)
 
 for file in files:
+
+    if file == 'excluded_states.csv':
+        continue
+
     data = pd.read_csv(f'{folder}/{file}')
     state = file.split('.')[0]
     data = state_comments_to_topics(data, state)

@@ -7,12 +7,15 @@ files = os.listdir(folder)
 
 for file in files:
 
+    if file == 'excluded_states.csv':
+        continue
+
     data = pd.read_csv(f'{folder}/{file}')
     state = file.split('.')[0]
 
     # Distributions of topics by frequency in comments
-
-    topic_counts = data['corresponding_topic'].value_counts().to_dict()
+    topic_counts = data[data['corresponding_topic'] != 'No Topic']['corresponding_topic'].value_counts().to_dict()
+    
 
     plt.figure(figsize=(20, 8))
     plt.bar(topic_counts.keys(), topic_counts.values())
@@ -27,7 +30,7 @@ for file in files:
     negative_sentiments = ['Fear', 'Anger', 'Sadness']
     filtered_data = data[data['Sentiment'].isin(negative_sentiments)]
 
-    topic_counts = filtered_data['corresponding_topic'].value_counts().to_dict()
+    topic_counts = filtered_data[filtered_data['corresponding_topic'] != 'No Topic']['corresponding_topic'].value_counts().to_dict()
     intensity_sums = filtered_data.groupby('corresponding_topic')['Intensity'].sum().to_dict()
 
     combined_counts = {topic: topic_counts.get(topic) * intensity_sums.get(topic) for topic in topic_counts.keys()}

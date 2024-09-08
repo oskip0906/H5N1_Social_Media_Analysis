@@ -26,12 +26,10 @@ def make_word_clouds(folder):
 
         for word in text.split():
             # Remove common terms used in data collection
-            if word.lower() not in ['bird', 'avian', 'flu', 'influenza', 'h5n1']:
+            if word.lower() not in ['bird', 'birds', 'avian', 'flu', 'influenza', 'h5n1']:
                 filtered_words.append(word)
 
         text = ' '.join(filtered_words)
-
-        # print(text)
 
         wordcloud = WordCloud(background_color="white", height=400, width=800).generate(text)
         
