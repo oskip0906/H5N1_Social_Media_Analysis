@@ -1,11 +1,16 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
+import os
 
-def generate_correlation_graph(sentiment, shifted=False):
+def generate_correlation_graph(state, sentiment, shifted=False):\
 
-    sentiments_data = pd.read_csv('csv_files/classified_comments.csv')
-    outbreaks_data = pd.read_csv(f'csv_files/outbreaks_cases_weekly.csv')
+    if state == '_overall_':
+        sentiments_data = pd.read_csv('csv_files/classified_comments.csv')
+        outbreaks_data = pd.read_csv(f'csv_files/outbreaks_cases_weekly.csv')
+    else:
+        sentiments_data = pd.read_csv(f'csv_files/classified_comments_by_state/{state}.csv')
+        outbreaks_data = pd.read_csv(f'csv_files/outbreaks_cases_by_state/{state}.csv')
 
     if sentiment == 'Overall':
         sentiments = ['Sadness', 'Fear', 'Anger', 'Joy', 'Neutral', 'Surprise', 'Love']
@@ -77,15 +82,25 @@ def generate_correlation_graph(sentiment, shifted=False):
     plt.ylabel('Normalized Value for Level (0-100)')
     plt.legend(loc='upper right')
     plt.text(0.5, 1.05, f"Pearson correlation coefficient: {correlation.round(3)}", ha='center', transform=plt.gca().transAxes)
-
+    
     if shifted:
-        plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/shifted_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
+        plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/shifted_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
     else:
-        plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
+        plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/outbreaks_vs_{sentiment}_levels.png")
 
 # Generate correlation graphs for main sentiments
 sentiments = ['Sadness', 'Fear', 'Anger', 'Joy', 'Overall']
 
+folder = 'csv_files/classified_comments_by_state'
+files = os.listdir(folder)
+
+for file in files:
+    if file == 'excluded_states.csv':
+        continue
+    state = file[:-4].split('/')[-1]
+    generate_correlation_graph(state, 'Overall')
+    generate_correlation_graph(state, 'Overall', shifted=True)
+
 for sentiment in sentiments:
-    generate_correlation_graph(sentiment)
-    generate_correlation_graph(sentiment, shifted=True)
+    generate_correlation_graph('_overall_', sentiment)
+    generate_correlation_graph('_overall_', sentiment, shifted=True)
