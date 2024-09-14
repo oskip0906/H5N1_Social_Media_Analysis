@@ -33,6 +33,19 @@ def generate_correlation_graph(state, sentiment, shifted=False, removed_outliers
     sentiments_data.index = sentiments_data.index.to_timestamp()
     sentiments_data = sentiments_data.resample('W-MON').sum().fillna(0)
 
+    outbreaks_data['Week'] = pd.to_datetime(outbreaks_data['Week'], format='%Y-%m')
+
+    # Remove the outliers
+    if removed_outliers:
+        sentiments_data = sentiments_data[~(
+            (sentiments_data.index >= pd.Timestamp('2023-01-01')) & 
+            (sentiments_data.index <= pd.Timestamp('2023-01-31'))
+        )]
+        outbreaks_data = outbreaks_data[~(
+            (outbreaks_data['Week'] >= pd.Timestamp('2023-01-01')) & 
+            (outbreaks_data['Week'] <= pd.Timestamp('2023-01-31'))
+        )]
+
     # Comphrehensive score 
     sentiments_data['score'] = sentiments_data['sentiment_count'] * sentiments_data['intensity']
 
@@ -42,7 +55,6 @@ def generate_correlation_graph(state, sentiment, shifted=False, removed_outliers
     sentiments_data['score'] = (sentiments_data['score'] - min_score) / (max_score - min_score) * 100
 
     # Normalize the cases values
-    outbreaks_data['Week'] = pd.to_datetime(outbreaks_data['Week'], format='%Y-%m')
     min_val = outbreaks_data['Cases'].min()
     max_val = outbreaks_data['Cases'].max()
     outbreaks_data['Cases'] = (outbreaks_data['Cases'] - min_val) / (max_val - min_val) * 100
@@ -53,13 +65,6 @@ def generate_correlation_graph(state, sentiment, shifted=False, removed_outliers
     if shifted:
         sentiments_data = sentiments_data.shift(-3)
         sentiments_data = sentiments_data.iloc[:-3]
-
-    # Remove the outliers
-    if removed_outliers:
-        sentiments_data = sentiments_data[~(
-            (sentiments_data.index >= pd.Timestamp('2023-01-01')) & 
-            (sentiments_data.index <= pd.Timestamp('2023-01-31'))
-        )]
 
     # Calculate Pearson correlation
     sentiment_levels = []
@@ -91,9 +96,9 @@ def generate_correlation_graph(state, sentiment, shifted=False, removed_outliers
     plt.text(0.5, 1.05, f"Pearson correlation coefficient: {correlation.round(3)}", ha='center', transform=plt.gca().transAxes)
     
     if shifted:
-        plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/no_outliers_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
-    elif removed_outliers:
         plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/shifted_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
+    elif removed_outliers:
+        plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/no_outliers_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
     else:
         plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/outbreaks_vs_{sentiment}_levels.png")
 
