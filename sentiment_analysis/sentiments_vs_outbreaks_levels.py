@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import os
 
-def generate_correlation_graph(state, sentiment, shifted=False):\
+def generate_correlation_graph(state, sentiment, shifted=False, removed_outliers=False):
 
     if state == '_overall_':
         sentiments_data = pd.read_csv('csv_files/classified_comments.csv')
@@ -54,6 +54,13 @@ def generate_correlation_graph(state, sentiment, shifted=False):\
         sentiments_data = sentiments_data.shift(-3)
         sentiments_data = sentiments_data.iloc[:-3]
 
+    # Remove the outliers
+    if removed_outliers:
+        sentiments_data = sentiments_data[~(
+            (sentiments_data.index >= pd.Timestamp('2023-01-01')) & 
+            (sentiments_data.index <= pd.Timestamp('2023-01-31'))
+        )]
+
     # Calculate Pearson correlation
     sentiment_levels = []
     cases_levels = []
@@ -84,6 +91,8 @@ def generate_correlation_graph(state, sentiment, shifted=False):\
     plt.text(0.5, 1.05, f"Pearson correlation coefficient: {correlation.round(3)}", ha='center', transform=plt.gca().transAxes)
     
     if shifted:
+        plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/no_outliers_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
+    elif removed_outliers:
         plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/shifted_outbreaks_vs_sentiment_levels/outbreaks_vs_{sentiment}_levels.png")
     else:
         plt.savefig(f"graphs/outbreaks_cases_vs_sentiment_levels/{state}/outbreaks_vs_{sentiment}_levels.png")
@@ -100,7 +109,9 @@ for file in files:
     state = file[:-4].split('/')[-1]
     generate_correlation_graph(state, 'Overall')
     generate_correlation_graph(state, 'Overall', shifted=True)
+    generate_correlation_graph(state, 'Overall', removed_outliers=True)
 
 for sentiment in sentiments:
     generate_correlation_graph('_overall_', sentiment)
     generate_correlation_graph('_overall_', sentiment, shifted=True)
+    generate_correlation_graph('_overall_', sentiment, removed_outliers=True)
