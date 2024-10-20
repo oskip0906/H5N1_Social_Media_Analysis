@@ -1,6 +1,8 @@
 ## Objective
 To conduct a comprehensive analysis of social media posts related to H5N1 outbreaks using posts and comments from Reddit communities for various states in the US from early 2022 to mid 2024.
 
+[Research Paper Draft](https://docs.google.com/document/d/1T1YkfMTLNF5xUYmxEUjxVerIV7ph7CNbqLIIjzzRdZ8/edit?usp=sharing)
+
 ## Sources
 
 - **Outbreaks Data:** [USDA HPAI Detections](https://www.aphis.usda.gov/livestock-poultry-disease/avian/avian-influenza/hpai-detections/commercial-backyard-flocks)
