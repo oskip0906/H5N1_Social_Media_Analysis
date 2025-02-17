@@ -1,62 +1,47 @@
 import os
 import json
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 def state_comments_to_topics(data, state):
 
-    with open(f'topic_modeling/BERTopic_method/topics_by_state/{state}.json', 'r') as f:
+    with open(f'topic_modeling/BERTopic_method/comments_by_state/{state}.json', 'r') as f:
         topics1 = json.load(f)
+        topics1 = {f'BERTopic {k}': v for k, v in topics1.items()}
 
-    with open(f'topic_modeling/LDA_method/topics_by_state/{state}.json', 'r') as f:
+    with open(f'topic_modeling/LDA_method/comments_by_state/{state}.json', 'r') as f:
         topics2 = json.load(f)
-
-    last_key_for_topics1 = list(topics1.keys())[-1]
-    last_topic_number = int(last_key_for_topics1.split(' ')[1])
-
-    topics2 = {f'Topic {last_topic_number + i}': topics2[key] for i, key in enumerate(topics2)}
+        topics2 = {f'LDA {k}': v for k, v in topics2.items()}
 
     topics = {**topics1, **topics2}
 
-    with open(f'topic_modeling/combined_topics_by_state/{state}.json', 'w') as f:
-        json.dump(topics, f)
-
-    data[['corresponding_topic', 'similarity_to_topic']] = data['Comment'].apply(
-        lambda x: pd.Series(comment_to_topic(x, topics))
+    data['corresponding_topic'] = data['Comment'].apply(
+        lambda x: comment_to_topic(x, topics)
     )
 
     return data
-
+    
 def comment_to_topic(comment, topics):
-  
-    topic_texts = []
-
-    for subtopics in topics.values():
-        filtered_subtopic = ""
-        for word in " ".join(subtopics).split():
-            #  Remove common terms used in data collection
-            if word.lower() not in ['bird', 'birds', 'avian', 'flu', 'influenza', 'h5n1']:
-                filtered_subtopic += word + " "
-        topic_texts.append(filtered_subtopic.strip())
-
-    # Vectorize text data
-    vectorizer = CountVectorizer()
-    matrix1 = vectorizer.fit_transform([comment])
-    matrix2 = vectorizer.transform(topic_texts)
-
-    # Calculate cosine similarity between comment and topic
-    similarities = cosine_similarity(matrix1, matrix2).flatten()
+    candidate_topics = []
+    for topic, comments in topics.items():
+        if comment in comments:
+            candidate_topics.append(topic)
     
-    # Find topic with highest similarity
-    highest_similarity_index = similarities.argmax()
+    if candidate_topics:
+        # Create a TF-IDF vectorizer and fit it on the comment and candidate topics
+        vectorizer = TfidfVectorizer().fit_transform([comment] + candidate_topics)
+        vectors = vectorizer.toarray()
+        
+        # Calculate cosine similarities between the comment vector and each candidate topic vector
+        cosine_similarities = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
 
-    if similarities.max() < 0.01:
-        assigned_topic = 'No Topic'
+        # Find the topic with the highest cosine similarity
+        best_topic_index = cosine_similarities.argmax()
+
+        return candidate_topics[best_topic_index]
     else:
-        assigned_topic = list(topics.keys())[highest_similarity_index]
-    
-    return assigned_topic, similarities[highest_similarity_index]
+        return 'No topic'
 
 folder = 'csv_files/classified_comments_by_state'
 files = os.listdir(folder)
