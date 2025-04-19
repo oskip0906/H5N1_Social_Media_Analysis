@@ -16,5 +16,5 @@ sentence_transformers==3.0.1
 statannotations==0.6.0
 statsmodels==0.14.2
 torch==2.3.1
-transformers==4.42.3
+transformers==4.48.0
 wordcloud==1.9.3
